@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Web Mobile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: white;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .header img {
+            width: 100%;
+            height: auto;
+        }
+        .header .menu-icon {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5em;
+            color: #007bff;
+            z-index: 1000;
+            cursor: pointer;
+        }
+        .menu {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            width: 50%;
+            height: 50vh;
+            background-color: #003366;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 10px;
+        }
+        .menu.show {
+            display: flex;
+        }
+        .menu > .menu-item {
+            position: relative;
+        }
+        .menu a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-bottom: 1px solid #002244;
+            display: block;
+        }
+        .menu a:hover {
+            background-color: #004080;
+        }
+        .menu a:last-child {
+            border-bottom: none;
+        }
+        .menu .english-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .menu .english-link img {
+            width: 20px;
+            height: auto;
+            margin-left: 10px;
+        }
+        .content {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+        }
+        .animated-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            position: relative;
+        }
+        .button-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .button-container a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 5px;
+        }
+        /* Style pour la boîte de dialogue */
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ff9f00; /* Couleur orange plus foncée */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .dialog h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.5em;
+            color: #003366;
+        }
+        .dialog p {
+            margin: 10px 0;
+            padding: 0;
+            font-size: 1.2em;
+            color: #003366; /* Bleu foncé */
+            font-weight: bold; /* Texte en gras */
+        }
+        /* Style pour le pop-up Nos Valeurs */
+        #valeurs-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        #valeurs-popup img {
+            width: 100%;
+            height: auto;
+        }
+        #valeurs-popup p {
+            font-size: 0.7em; /* Taille de la police ajustée */
+            line-height: 1.5;
+            color: #333;
+            margin: 0; /* Enlever les marges entre les paragraphes */
+            padding: 0; /* Enlever les paddings entre les paragraphes */
+        }
+        /* Style pour le pop-up Contact */
+        #contact-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        #contact-popup input, #contact-popup textarea {
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #contact-popup textarea {
+            height: 200px; /* Hauteur ajustée pour rendre le champ carré */
+            width: 100%; /* Largeur ajustée pour rendre le champ carré */
+            box-sizing: border-box;
+        }
+        #contact-popup button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #contact-popup .send-button {
+            background-color: #007bff;
+            color: white;
+        }
+        #contact-popup .close-button {
+            background-color: #ff4d4d;
+            color: white;
+        }
+        /* Style pour le bouton Se déconnecter */
+        #logout-button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #logout-button:hover {
+            background-color: #e03e3e;
+        }
+        /* Styles pour les icônes de réseaux sociaux */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 0; /* Espacement supprimé entre les icônes */
+            margin-top: 10px;
+        }
+        .social-icons a {
+            color: white; /* Icônes en blanc */
+            font-size: 1.5em;
+            text-decoration: none;
+            padding: 0 5px; /* Espacement très réduit entre les icônes */
+        }
+        .social-icons a:hover {
+            color: #ccc; /* Couleur des icônes au survol */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.ibb.co/RSp1mzF/Screenshot-20240903-134513.png" alt="Header Image">
+        <i class="fas fa-bars menu-icon" onclick="toggleMenu()"></i>
+        <div id="menu" class="menu">
+            <div class="menu-item">
+                <a href="#" onclick="toggleSubMenu()">Se connecter</a>
+                <div id="submenu" class="submenu" style="display: none;">
+                    <input type="text" placeholder="Identifiant">
+                    <input type="password" placeholder="Mot de passe">
+                    <button>Se connecter</button>
+                </div>
+            </div>
+            <a href="#" onclick="showDialog()">Réservation</a>
+            <a href="#immozar" onclick="showImmoZarImage()">ImmoZar</a>
+            <a href="#nos-valeurs" onclick="showValeursPopup()">Nos valeurs</a>
+            <a href="#nos-services">Nos services</a>
+            <a href="#contact" onclick="showContactPopup()">Contact</a>
+            <a href="#" id="english-link" class="english-link">English
+                <img src="https://i.ibb.co/rxNB0DG/Flag-of-the-United-Kingdom.png" alt="British Flag">
+            </a>
+            <a href="#" id="french-link" style="display: none;" class="english-link">Français
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Ensign_of_France.svg/langfr-1280px-Ensign_of_France.svg.png" alt="French Flag">
+            </a>
+            <button id="logout-button" onclick="logout()">Se déconnecter</button>
+            <div class="social-icons">
+                <a href="https://www.facebook.com" target="_blank" class="fab fa-facebook"></a>
+                <a href="https://www.youtube.com" target="_blank" class="fab fa-youtube"></a>
+                <a href="https://www.instagram.com" target="_blank" class="fab fa-instagram"></a>
+                <a href="https://www.linkedin.com" target="_blank" class="fab fa-linkedin"></a>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <img class="animated-image" src="https://media.giphy.com/media/03L4IdniGVFHFT8iOn/giphy.gif" alt="Animated Image">
+        <img id="immozar-image" src="https://ibb.co/m5qMWrS" alt="ImmoZar Image" style="display: none; width: 100%; height: auto;">
+    </div>
+    <div id="dialog" class="dialog">
+        <h2>Message</h2>
+        <p>عزيزي العميل، الحجوزات ستبدأ قريبا</p>
+        <p>Cher client, les réservations vont bientôt commencer.</p>
+        <p>Dear customer, reservations will start soon.</p>
+        <button onclick="hideDialog()">Fermer</button>
+    </div>
+    <div id="valeurs-popup">
+        <h2>Nos Valeurs</h2>
+        <img src="https://maestro.oiq.qc.ca/media/catalog/product/cache/58e746e35ae065118f4e6edca4d9faaa/b/l/blackboard.jpg" alt="Nos valeurs Image">
+        <p>Chez ImmoZar’ Sarl , nos valeurs fondamentales guident chacune de nos actions et définissent notre manière de travailler ensemble et avec nos associés. Elles sont au cœur de notre engagement envers nos clients, nos partenaires et la société.</p>
+        <p>- Intégrité : Nous agissons avec honnêteté et transparence dans toutes nos interactions. Nous tenons nos promesses et respectons les plus hauts standards éthiques.</p>
+        <p>- Innovation : Nous croyons en l'importance de l'innovation continue pour offrir des solutions qui répondent aux besoins changeants de nos clients. L'amélioration constante et la créativité sont au centre de notre démarche.</p>
+        <p>- Responsabilité : Nous assumons la responsabilité de nos actions, tant au sein de l'entreprise qu'au sein de la communauté.</p>
+        <p>- Esprit d'Équipe : Nous favorisons un environnement de collaboration où chaque associé est valorisé. Ensemble, nous partageons nos idées, nos compétences et nos réussites pour atteindre des objectifs communs.</p>
+        <p>- Excellence : Nous nous efforçons de fournir des produits et services de qualité supérieure. L'excellence est une quête permanente pour améliorer nos performances et celles de nos clients.</p>
+        <p>Ces valeurs sont plus que des mots pour nous. Elles constituent la base de notre identité et façonnent la culture de notre entreprise au quotidien.</p>
+        <button onclick="hideValeursPopup()">Fermer</button>
+    </div>
+    <div id="contact-popup">
+        <h2>Nous Joindre</h2>
+        <input type="email" placeholder="Votre Email">
+        <textarea placeholder="Votre Message"></textarea>
+        <br>
+        <button class="send-button">Envoyer</button>
+        <button class="close-button" onclick="hideContactPopup()">Fermer</button>
+    </div>
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("menu");
+            menu.classList.toggle("show");
+        }
+        function toggleSubMenu() {
+            var submenu = document.getElementById("submenu");
+            submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+        }
+        function showDialog() {
+            var dialog = document.getElementById("dialog");
+            dialog.style.display = 'block';
+        }
+        function hideDialog() {
+            var dialog = document.getElementById("dialog");
+            dialog.style.display = 'none';
+        }
+        function showImmoZarImage() {
+            var image = document.getElementById('immozar-image');
+            image.style.display = 'block';
+        }
+        function translateToEnglish() {
+            document.querySelector('.menu-item a').textContent = 'Log In';
+            document.querySelector('.menu a[href="#immozar"]').textContent = 'ImmoZar';
+            document.querySelector('.menu a[href="#nos-valeurs"]').textContent = 'Our Values';
+            document.querySelector('.menu a[href="#nos-services"]').textContent = 'Our Services';
+            document.querySelector('.menu a[href="#contact"]').textContent = 'Contact';
+            document.querySelector('#logout-button').textContent = 'Log Out';
+            document.querySelector('#english-link').style.display = 'none';
+            document.querySelector('#french-link').style.display = 'block';
+        }
+        function translateToFrench() {
+            document.querySelector('.menu-item a').textContent = 'Se connecter';
+            document.querySelector('.menu a[href="#immozar"]').textContent = 'ImmoZar';
+            document.querySelector('.menu a[href="#nos-valeurs"]').textContent = 'Nos valeurs';
+            document.querySelector('.menu a[href="#nos-services"]').textContent = 'Nos services';
+            document.querySelector('.menu a[href="#contact"]').textContent = 'Contact';
+            document.querySelector('#logout-button').textContent = 'Se déconnecter';
+            document.querySelector('#english-link').style.display = 'block';
+            document.querySelector('#french-link').style.display = 'none';
+        }
+        document.querySelector('#english-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            translateToEnglish();
+        });
+        document.querySelector('#french-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            translateToFrench();
+        });
+        document.querySelector('.menu a[href="#immozar"]').addEventListener('click', function(event) {
+            event.preventDefault();
+            showImmoZarImage();
+        });
+        document.querySelector('.menu a[href="#nos-valeurs"]').addEventListener('click', function(event) {
+            event.preventDefault();
+            showValeursPopup();
+        });
+        function showContactPopup() {
+            var contactPopup = document.getElementById("contact-popup");
+            contactPopup.style.display = "block";
+        }
+        function hideContactPopup() {
+            var contactPopup = document.getElementById("contact-popup");
+            contactPopup.style.display = "none";
+        }
+        function showValeursPopup() {
+            var valeursPopup = document.getElementById("valeurs-popup");
+            valeursPopup.style.display = "block";
+        }
+        function hideValeursPopup() {
+            var valeursPopup = document.getElementById("valeurs-popup");
+            valeursPopup.style.display = "none";
+        }
+        function logout() {
+            alert("Déconnexion...");
+            window.location.href = '/login'; // Remplacez par l'URL de la page de connexion
+        }
+    </script>
+</body>
+</html>
+
+
